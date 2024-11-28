@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// const API_URL = 'http://localhost:5000/api/projects';
+
 
 const API_URL = 'https://destiny-expense-tracker.onrender.com/api/projects';
 
