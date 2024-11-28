@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+
 const InvByProject = () => {
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [investmentFilter, setInvestmentFilter] = useState('');
-  // eslint-disable-next-line no-unused-vars
   const [selectedClient, setSelectedClient] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [selectedProject, setSelectedProject] = useState(null);
   const [view, setView] = useState('clients'); // 'clients', 'projects', or 'expenses'
 
@@ -19,11 +18,10 @@ const InvByProject = () => {
   const [totalExpenses, setTotalExpenses] = useState(0); // For all expenses
   const [filteredTotal, setFilteredTotal] = useState(0); // For filtered expenses
 
-
   // Fetch all clients
   const fetchClients = async () => {
     try {
-      const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/clients');
+      const response = await axios.get('http://localhost:5000/api/clients');
       setClients(response.data);
     } catch (error) {
       console.error('Error fetching clients:', error);
@@ -33,7 +31,7 @@ const InvByProject = () => {
   // Fetch projects for a specific client
   const fetchProjects = async (clientId) => {
     try {
-      const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/projects/${clientId}`);
+      const response = await axios.get(`http://localhost:5000/api/projects/${clientId}`);
       setProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -43,7 +41,7 @@ const InvByProject = () => {
   // Fetch expenses for a specific project
   const fetchExpenses = async (projectId) => {
     try {
-      const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/expenses/${projectId}`);
+      const response = await axios.get(`http://localhost:5000/api/expenses/${projectId}`);
       setExpenses(response.data);
       setFilteredExpenses(response.data); // Initialize filtered expenses
       setTotalExpenses(calculateTotal(response.data)); // Set total for all expenses
@@ -104,7 +102,7 @@ const InvByProject = () => {
     // Handle deleting an expense
     const handleDeleteExpense = async (expenseId) => {
       try {
-        await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
+        await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
         setExpenses(expenses.filter((expense) => expense._id !== expenseId)); // Remove deleted expense from the state
         alert('Expense deleted successfully!');
       } catch (error) {
@@ -194,10 +192,10 @@ const InvByProject = () => {
             <p>Total Expenses: Rs.{totalExpenses.toLocaleString()}</p>
             <p>
               Total for Filtered Expenses:{' '}
-              {investmentFilter ? `$${filteredTotal}` : 'N/A (No filter applied)'}
+              {investmentFilter ? `Rs. ${filteredTotal}` : 'N/A (No filter applied)'}
             </p>
           </div>
-
+ 
           {filteredExpenses.length > 0 ? (
             <table className="w-full border-collapse border border-gray-700">
               <thead>
@@ -215,7 +213,7 @@ const InvByProject = () => {
                     <td className="border border-gray-700 px-4 py-2">{expense.description}</td>
                     <td className="border border-gray-700 px-4 py-2">Rs.{expense.amount.toLocaleString()}</td>
                     <td className="border border-gray-700 px-4 py-2">
-                      {new Date(expense.date).toLocaleDateString()}
+                      {new Date(expense.date).toLocaleDateString('en-GB')}
                     </td>
                     <td className="border border-gray-700 px-4 py-2">{expense.investment}</td>
                     <td className="border border-gray-700 px-4 py-2">
@@ -245,5 +243,6 @@ const InvByProject = () => {
     </div>
   );
 };
+
 
 export default InvByProject;
