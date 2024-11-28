@@ -21,7 +21,7 @@ const InvByProject = () => {
   // Fetch all clients
   const fetchClients = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/clients');
+      const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/clients');
       setClients(response.data);
     } catch (error) {
       console.error('Error fetching clients:', error);
@@ -31,7 +31,7 @@ const InvByProject = () => {
   // Fetch projects for a specific client
   const fetchProjects = async (clientId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/projects/${clientId}`);
+      const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/projects/${clientId}`);
       setProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -41,7 +41,7 @@ const InvByProject = () => {
   // Fetch expenses for a specific project
   const fetchExpenses = async (projectId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/expenses/${projectId}`);
+      const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/expenses/${projectId}`);
       setExpenses(response.data);
       setFilteredExpenses(response.data); // Initialize filtered expenses
       setTotalExpenses(calculateTotal(response.data)); // Set total for all expenses
@@ -102,7 +102,7 @@ const InvByProject = () => {
     // Handle deleting an expense
     const handleDeleteExpense = async (expenseId) => {
       try {
-        await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
+        await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
         setExpenses(expenses.filter((expense) => expense._id !== expenseId)); // Remove deleted expense from the state
         alert('Expense deleted successfully!');
       } catch (error) {
