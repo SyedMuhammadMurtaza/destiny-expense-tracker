@@ -9,7 +9,7 @@ const InvestmentSummary = () => {
   // Fetch investment summary for Muneeb
   const fetchMuneebInvestmentSummary = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/expenses/investment-summary/Muneeb');
+      const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/expenses/investment-summary/Muneeb');
       setMuneebInvestmentSummary(response.data);
     } catch (error) {
       console.error('Error fetching Muneeb investment summary:', error);
@@ -19,7 +19,7 @@ const InvestmentSummary = () => {
   // Fetch investment summary for Asad
   const fetchAsadInvestmentSummary = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/expenses/investment-summary/Asad');
+      const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/expenses/investment-summary/Asad');
       setAsadInvestmentSummary(response.data);
     } catch (error) {
       console.error('Error fetching Asad investment summary:', error);

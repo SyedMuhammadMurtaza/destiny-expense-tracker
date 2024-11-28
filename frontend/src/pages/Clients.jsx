@@ -11,7 +11,7 @@ const Clients = () => {
   // Fetch all clients
   const fetchClients = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/clients');
+      const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/clients');
       setClients(response.data);
     } catch (error) {
       console.error('Error fetching clients:', error);
@@ -23,8 +23,9 @@ const Clients = () => {
     e.preventDefault();
     if (!newClient.trim()) return;
 
+
     try {
-      await axios.post('http://localhost:5000/api/clients', { name: newClient });
+      await axios.post('https://destiny-expense-tracker.onrender.com/api/clients', { name: newClient });
       setNewClient('');
       fetchClients(); // Reload clients list after creation
     } catch (error) {

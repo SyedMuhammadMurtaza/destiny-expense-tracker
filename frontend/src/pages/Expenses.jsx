@@ -18,10 +18,11 @@ const Expenses = () => {
 
   const investmentOptions = ['Muneeb', 'Asad']; // Predefined investment names
 
+
   // Fetch all clients
   const fetchClients = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/clients');
+      const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/clients');
       setClients(response.data);
     } catch (error) {
       console.error('Error fetching clients:', error);
@@ -35,7 +36,7 @@ const Expenses = () => {
       return;
     }
     try {
-      const response = await axios.get(`http://localhost:5000/api/projects/${clientId}`);
+      const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/projects/${clientId}`);
       setProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -49,7 +50,7 @@ const Expenses = () => {
       return;
     }
     try {
-      const response = await axios.get(`http://localhost:5000/api/expenses/${projectId}`);
+      const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/expenses/${projectId}`);
       setExpenses(response.data);
     } catch (error) {
       console.error('Error fetching expenses:', error);
@@ -78,7 +79,7 @@ const Expenses = () => {
     if (!description.trim() || !amount || !selectedClient || !selectedProject || !date || !investment) return;
 
     try {
-      await axios.post('http://localhost:5000/api/expenses', {
+      await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses', {
         description,
         amount,
         date,
@@ -101,7 +102,7 @@ const Expenses = () => {
   // Handle deleting an expense
   const handleDeleteExpense = async (expenseId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
+      await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
       setExpenses(expenses.filter((expense) => expense._id !== expenseId)); // Remove deleted expense from the state
       alert('Expense deleted successfully!');
     } catch (error) {

@@ -15,17 +15,18 @@ const Projects = () => {
   // Fetch all projects
   const fetchProjects = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/projects');
+      const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/projects');
       setProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
   };
+  
 
   // Fetch all clients
   const fetchClients = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/clients');
+      const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/clients');
       setClients(response.data);
     } catch (error) {
       console.error('Error fetching clients:', error);
@@ -38,7 +39,7 @@ const Projects = () => {
     if (!newProjectName.trim() || !selectedClient) return;
 
     try {
-      await axios.post('http://localhost:5000/api/projects', {
+      await axios.post('https://destiny-expense-tracker.onrender.com/api/projects', {
         name: newProjectName,
         clientId: selectedClient,
       });
