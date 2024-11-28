@@ -7,7 +7,9 @@ const InvByProject = () => {
   const [expenses, setExpenses] = useState([]);
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [investmentFilter, setInvestmentFilter] = useState('');
+  // eslint-disable-next-line no-unused-vars
   const [selectedClient, setSelectedClient] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [selectedProject, setSelectedProject] = useState(null);
   const [view, setView] = useState('clients'); // 'clients', 'projects', or 'expenses'
 
