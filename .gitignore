@@ -1,0 +1,16 @@
+# Node.js dependencies for backend and frontend
+backend/node_modules/
+frontend/node_modules/
+
+# Logs
+backend/logs/
+frontend/logs/
+*.log
+
+# Environment variables
+backend/.env
+frontend/.env
+
+# Build outputs
+backend/dist/
+frontend/build/
