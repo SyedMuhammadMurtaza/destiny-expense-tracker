@@ -66,7 +66,7 @@ const InvestmentSummary = () => {
   const clientIds = [...new Set([...Object.keys(groupedMuneebByClient), ...Object.keys(groupedAsadByClient)])];
 
   return (
-    <div className="p-6">
+    <div className="p-6 mt-12">
       <h2 className="text-xl font-semibold mb-4">Investment Summary</h2>
 
       {/* Client Tabs */}

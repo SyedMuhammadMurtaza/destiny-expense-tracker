@@ -38,7 +38,7 @@ const Clients = () => {
   }, []);
 
   return (
-    <div className=" p-6">
+    <div className=" p-6 mt-12">
       <h1 className="text-2xl font-semibold mb-6">Clients</h1>
 
       {/* Create Client Form */}
