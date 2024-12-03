@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const Expenses = () => {
   const [clients, setClients] = useState([]);
@@ -139,6 +141,18 @@ const Expenses = () => {
     }
   };
 
+  // Handle deleting an expense
+  const handleDeleteExpense = async (expenseId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
+      setExpenses(expenses.filter((expense) => expense._id !== expenseId)); // Remove deleted expense from the state
+      alert('Expense deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      alert('Failed to delete expense.');
+    }
+  };
+
   useEffect(() => {
     fetchClients();
   }, []);
@@ -150,6 +164,42 @@ const Expenses = () => {
       setProjects([]);
     }
   }, [selectedClientId]);
+
+  const handleDownloadPDF = () => {
+    if (!selectedProject) {
+      alert("No project selected for generating PDF.");
+      return;
+    }
+
+    const project = projects.find((proj) => proj._id === selectedProject);
+    const projectName = project ? project.name : "Unknown Project";
+
+    if (expenses.length === 0) {
+      alert("No expenses available to generate PDF.");
+      return;
+    }
+    const doc = new jsPDF();
+    doc.text(`Expenses Report For ${selectedProject}`, 14, 15);
+  
+    // Extract table rows and columns
+    const tableData = expenses.map((expense) => [
+      new Date(expense.date).toLocaleDateString('en-GB'),
+      expense.description,
+      `Rs. ${expense.amount.toLocaleString()}`,
+      expense.investment,
+    ]);
+  
+    // Define table columns
+    const tableColumns = ['Date', 'Description', 'Amount', 'Investment By'];
+  
+    doc.autoTable({
+      head: [tableColumns],
+      body: tableData,
+      startY: 30, // Adjust this value for more margin at the top
+    });
+  
+    doc.save(`${selectedProject} expenses-report.pdf`);
+  };
 
   return (
     <div className="p-6 mt-12">
@@ -270,6 +320,50 @@ const Expenses = () => {
           Log Expense
         </Button>
       </form>
+
+      {/* Expenses List */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Expense List</h2>
+        {expenses.length === 0 ? (
+          <p>No expenses found for this project.</p>
+        ) : (
+          <table className="w-full border-collapse border border-gray-700">
+            <thead>
+              <tr className='bg-gray-800 text-white'>
+                <th className="border px-4 py-2">Description</th>
+                <th className="border px-4 py-2">Amount</th>
+                <th className="border px-4 py-2">Date</th>
+                <th className="border px-4 py-2">Investment By</th>
+                <th className="border px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expenses.map((expense) => (
+                <tr key={expense._id}>
+                  <td className="border px-4 py-2">{expense.description}</td>
+                  <td className="border px-4 py-2">Rs.{expense.amount.toLocaleString()}</td>
+                  <td className="border px-4 py-2">{new Date(expense.date).toLocaleDateString()}</td>
+                  <td className="border px-4 py-2">{expense.investment}</td>
+                  <td className="border px-4 py-2">
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded"
+                      onClick={() => handleDeleteExpense(expense._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <div className='mt-10'>
+      <Button variant="secondary" onClick={handleDownloadPDF}>
+  Download as PDF
+</Button>
+      </div>
     </div>
   );
 };

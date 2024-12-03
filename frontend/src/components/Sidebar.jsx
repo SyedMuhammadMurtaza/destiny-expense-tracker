@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const navigate = useNavigate(); // To navigate after logout
 
   // Ref for the sidebar to check for clicks outside
   const sidebarRef = useRef(null);
@@ -38,6 +39,12 @@ const Sidebar = () => {
       isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'
     }`;
 
+  // Handle logout functionality
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn'); // Clear login status from localStorage
+    navigate('/login'); // Redirect to login page
+  };
+
   return (
     <>
       {/* Sidebar */}
@@ -67,21 +74,29 @@ const Sidebar = () => {
           <NavLink to="/expenses" className={linkClasses} onClick={handleLinkClick}>
             Expenses
           </NavLink>
-          {/* <NavLink to="/ledger" className={linkClasses} onClick={handleLinkClick}>
-            Ledger
-          </NavLink> */}
-             {/* Ledger Menu */}
-             <hr className='mt-8'/>
-        <div>
-          <h3 className="px-4 py-2 mt-8 text-gray-400">Ledger</h3>
-          <NavLink to="/ledger/inv-by-project" className={linkClasses} onClick={handleLinkClick}>
-            Inv by Project
-          </NavLink>
-          <NavLink to="/ledger/inv-by-name" className={linkClasses} onClick={handleLinkClick}>
-            Inv by Name
-          </NavLink>
-        </div>
+
+          {/* Ledger Menu */}
+          <hr className="mt-8" />
+          <div>
+            <h3 className="px-4 py-2 mt-8 text-gray-400">Ledger</h3>
+            <NavLink to="/ledger/inv-by-project" className={linkClasses} onClick={handleLinkClick}>
+              Inv by Project
+            </NavLink>
+            <NavLink to="/ledger/inv-by-name" className={linkClasses} onClick={handleLinkClick}>
+              Inv by Name
+            </NavLink>
+          </div>
         </nav>
+
+        {/* Logout Button */}
+        <div className="absolute bottom-0 left-0 w-full p-4">
+          <button
+            onClick={handleLogout}
+            className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Sidebar Toggle Button */}

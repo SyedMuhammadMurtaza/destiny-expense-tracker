@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import Button from '../components/ui/Button';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const InvByProject = () => {
   const [clients, setClients] = useState([]);
@@ -43,9 +45,9 @@ const InvByProject = () => {
     try {
       const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/expenses/${projectId}`);
       setExpenses(response.data);
-      setFilteredExpenses(response.data); // Initialize filtered expenses
-      setTotalExpenses(calculateTotal(response.data)); // Set total for all expenses
-      setFilteredTotal(calculateTotal(response.data)); // Set initial total for filtered expenses
+      setFilteredExpenses(response.data);
+      setTotalExpenses(calculateTotal(response.data));
+      setFilteredTotal(calculateTotal(response.data));
     } catch (error) {
       console.error('Error fetching expenses:', error);
     }
@@ -88,29 +90,62 @@ const InvByProject = () => {
     if (filterValue === '') {
       // Reset filter
       setFilteredExpenses(expenses);
-      setFilteredTotal(calculateTotal(expenses)); // Update total for all expenses
+      setFilteredTotal(calculateTotal(expenses));
     } else {
       // Filter expenses based on investment field
       const filtered = expenses.filter((expense) =>
         expense.investment.toLowerCase().includes(filterValue.toLowerCase())
       );
       setFilteredExpenses(filtered);
-      setFilteredTotal(calculateTotal(filtered)); // Update total for filtered expenses
+      setFilteredTotal(calculateTotal(filtered));
     }
   };
 
-    // Handle deleting an expense
-    const handleDeleteExpense = async (expenseId) => {
-      try {
-        await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
-        setExpenses(expenses.filter((expense) => expense._id !== expenseId)); // Remove deleted expense from the state
-        alert('Expense deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting expense:', error);
-        alert('Failed to delete expense.');
-      }
-    };
+  const handleDeleteExpense = async (expenseId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
+      setExpenses(expenses.filter((expense) => expense._id !== expenseId));
+      alert('Expense deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      alert('Failed to delete expense.');
+    }
+  };
 
+  const handleDownloadPDF = () => {
+    if (!selectedProject) {
+      alert("No project selected for generating PDF.");
+      return;
+    }
+
+    const project = projects.find((proj) => proj._id === selectedProject);
+    const projectName = project ? project.name : "Unknown Project";
+
+    if (expenses.length === 0) {
+      alert("No expenses available to generate PDF.");
+      return;
+    }
+
+    const doc = new jsPDF();
+    doc.text(`Expenses Report for Project: ${projectName}`, 14, 15);
+
+    const tableData = expenses.map((expense) => [
+      new Date(expense.date).toLocaleDateString('en-GB'),
+      expense.description,
+      `Rs. ${expense.amount.toLocaleString()}`,
+      expense.investment,
+    ]);
+
+    const tableColumns = ['Date', 'Description', 'Amount', 'Investment By'];
+
+    doc.autoTable({
+      head: [tableColumns],
+      body: tableData,
+      startY: 30,
+    });
+
+    doc.save(`${projectName}-expenses-report.pdf`);
+  };
   useEffect(() => {
     fetchClients();
   }, []);
@@ -191,8 +226,7 @@ const InvByProject = () => {
           <div className="mb-4 text-gray-700 font-medium">
             <p>Total Expenses: Rs.{totalExpenses.toLocaleString()}</p>
             <p>
-              Total for Filtered Expenses:{' '}
-              {investmentFilter ? `Rs. ${filteredTotal}` : 'N/A (No filter applied)'}
+              Total for Filtered Expenses: {investmentFilter ? `Rs. ${filteredTotal}` : 'N/A'}
             </p>
           </div>
  
@@ -211,7 +245,9 @@ const InvByProject = () => {
                 {filteredExpenses.map((expense) => (
                   <tr key={expense._id} className="text-center">
                     <td className="border border-gray-700 px-4 py-2">{expense.description}</td>
-                    <td className="border border-gray-700 px-4 py-2">Rs.{expense.amount.toLocaleString()}</td>
+                    <td className="border border-gray-700 px-4 py-2">
+                      Rs.{expense.amount.toLocaleString()}
+                    </td>
                     <td className="border border-gray-700 px-4 py-2">
                       {new Date(expense.date).toLocaleDateString('en-GB')}
                     </td>
@@ -227,22 +263,27 @@ const InvByProject = () => {
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
+              {/* <tfoot>
                 <tr>
-                  <td colSpan="4" className="border border-gray-700 px-4 py-2 font-semibold">
-                    Total: Rs.{filteredTotal.toLocaleString()}
+                  <td colSpan={5} className="text-right py-2 px-4">
+                    <Button label="Download PDF" onClick={handleDownloadPDF} />
                   </td>
                 </tr>
-              </tfoot>
+              </tfoot> */}
             </table>
           ) : (
-            <p>No expenses found for the selected project or filter.</p>
+            <p className="text-red-600">No expenses found for the selected project.</p>
           )}
+          
         </div>
       )}
+       <div className='mt-10'>
+      <Button variant="secondary" onClick={handleDownloadPDF}>
+  Download as PDF
+</Button>
+</div>
     </div>
   );
 };
-
 
 export default InvByProject;
