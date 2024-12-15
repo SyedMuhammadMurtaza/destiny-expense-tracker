@@ -20,6 +20,7 @@ const Expenses = () => {
   const [date, setDate] = useState('');
   const [expenses, setExpenses] = useState([]);
   const [investment, setInvestment] = useState('');
+  const [expenseEntries, setExpenseEntries] = useState([]);
 
   const investmentOptions = ['Muneeb', 'Asad']; // Valid investment options
 
@@ -120,6 +121,20 @@ const Expenses = () => {
       return;
     }
 
+    // Add expense entry to the list
+    const newExpense = {
+      description,
+      amount,
+      date,
+      investment,
+      clientId: selectedClientId,
+      projectId: selectedProjectId,
+      client: selectedClient,
+      project: selectedProject,
+    };
+
+    setExpenseEntries([...expenseEntries, newExpense]);
+
     try {
       await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses', {
         description,
@@ -144,8 +159,9 @@ const Expenses = () => {
   // Handle deleting an expense
   const handleDeleteExpense = async (expenseId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
+      await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
       setExpenses(expenses.filter((expense) => expense._id !== expenseId)); // Remove deleted expense from the state
+      setExpenseEntries(expenseEntries.filter((expense) => expense._id !== expenseId)); // Remove from local expense entries state
       alert('Expense deleted successfully!');
     } catch (error) {
       console.error('Error deleting expense:', error);
@@ -165,40 +181,34 @@ const Expenses = () => {
     }
   }, [selectedClientId]);
 
+  // Handle downloading expenses as a PDF
   const handleDownloadPDF = () => {
-    if (!selectedProject) {
-      alert("No project selected for generating PDF.");
-      return;
-    }
-
-    const project = projects.find((proj) => proj._id === selectedProject);
-    const projectName = project ? project.name : "Unknown Project";
-
-    if (expenses.length === 0) {
+    if (expenseEntries.length === 0) {
       alert("No expenses available to generate PDF.");
       return;
     }
+
     const doc = new jsPDF();
-    doc.text(`Expenses Report For ${selectedProject}`, 14, 15);
-  
-    // Extract table rows and columns
-    const tableData = expenses.map((expense) => [
+    doc.text('Expenses Report', 14, 15);
+
+    const tableData = expenseEntries.map((expense) => [
       new Date(expense.date).toLocaleDateString('en-GB'),
+      expense.client,
+      expense.project,
       expense.description,
       `Rs. ${expense.amount.toLocaleString()}`,
       expense.investment,
     ]);
-  
-    // Define table columns
-    const tableColumns = ['Date', 'Description', 'Amount', 'Investment By'];
-  
+
+    const tableColumns = ['Date', 'Client', 'Project', 'Description', 'Amount', 'Investment By'];
+
     doc.autoTable({
       head: [tableColumns],
       body: tableData,
-      startY: 30, // Adjust this value for more margin at the top
+      startY: 30,
     });
-  
-    doc.save(`${selectedProject} expenses-report.pdf`);
+
+    doc.save('expenses-report.pdf');
   };
 
   return (
@@ -262,108 +272,96 @@ const Expenses = () => {
             </ul>
           )}
         </div>
-        <div className='relative w-44'>
-        <Input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Expense Description"
-          required
-        />
+
+        <div className="relative w-44">
+          <Input
+            type="text"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Expense Description"
+            required
+          />
         </div>
-        <div className='relative w-44'>
-        <Input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Amount"
-          required
-        />
-      </div>
-      <div className='relative w-44'>
-        <Input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          required
-        />
-        </div>      
+
+        <div className="relative w-44">
+          <Input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Amount"
+            required
+          />
+        </div>
+
+        <div className="relative w-44">
+          <Input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+        </div>
+
         {/* Investment By - Searchable Dropdown */}
         <div className="relative w-44">
           <Input
             type="text"
             value={investment}
             onChange={(e) => handleInvestmentSearch(e.target.value)}
-            placeholder="Investment by"
+            placeholder="Investment By"
             required
           />
           {filteredInvestments.length > 0 && investment.trim() && (
             <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto w-full">
-              {filteredInvestments.map((option, index) => (
+              {filteredInvestments.map((investmentOption) => (
                 <li
-                  key={index}
+                  key={investmentOption}
                   className="p-2 cursor-pointer hover:bg-gray-200"
                   onClick={() => {
-                    setInvestment(option);
+                    setInvestment(investmentOption);
                     setFilteredInvestments([]);
                   }}
                 >
-                  {option}
+                  {investmentOption}
                 </li>
               ))}
             </ul>
           )}
         </div>
-        
 
-        <Button type="submit" variant="primary">
-          Log Expense
-        </Button>
+        <Button type="submit">Log Expense</Button>
       </form>
 
-      {/* Expenses List */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Expense List</h2>
-        {expenses.length === 0 ? (
-          <p>No expenses found for this project.</p>
-        ) : (
-          <table className="w-full border-collapse border border-gray-700">
-            <thead>
-              <tr className='bg-gray-800 text-white'>
-                <th className="border px-4 py-2">Description</th>
-                <th className="border px-4 py-2">Amount</th>
-                <th className="border px-4 py-2">Date</th>
-                <th className="border px-4 py-2">Investment By</th>
-                <th className="border px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {expenses.map((expense) => (
-                <tr key={expense._id}>
-                  <td className="border px-4 py-2">{expense.description}</td>
-                  <td className="border px-4 py-2">Rs.{expense.amount.toLocaleString()}</td>
-                  <td className="border px-4 py-2">{new Date(expense.date).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2">{expense.investment}</td>
-                  <td className="border px-4 py-2">
-                    <button
-                      className="bg-red-500 text-white px-4 py-2 rounded"
-                      onClick={() => handleDeleteExpense(expense._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      <div className='mt-10'>
-      <Button variant="secondary" onClick={handleDownloadPDF}>
-  Download as PDF
-</Button>
-      </div>
+      {/* Display Expenses */}
+      <table className="w-full mt-6 border-collapse">
+        <thead>
+          <tr>
+            <th className="border p-2">Date</th>
+            <th className="border p-2">Client</th>
+            <th className="border p-2">Project</th>
+            <th className="border p-2">Description</th>
+            <th className="border p-2">Amount</th>
+            <th className="border p-2">Investment By</th>
+            <th className="border p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {expenseEntries.map((expense) => (
+            <tr key={expense._id}>
+              <td className="border p-2">{new Date(expense.date).toLocaleDateString('en-GB')}</td>
+              <td className="border p-2">{expense.client}</td>
+              <td className="border p-2">{expense.project}</td>
+              <td className="border p-2">{expense.description}</td>
+              <td className="border p-2">Rs. {expense.amount.toLocaleString()}</td>
+              <td className="border p-2">{expense.investment}</td>
+              <td className="border p-2">
+                <button  onClick={() => handleDeleteExpense(expense._id)} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <Button className='mt-12' onClick={handleDownloadPDF}>Download Expenses PDF</Button>
     </div>
   );
 };
