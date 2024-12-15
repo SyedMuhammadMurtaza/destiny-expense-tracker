@@ -159,7 +159,7 @@ const Expenses = () => {
   // Handle deleting an expense
   const handleDeleteExpense = async (expenseId) => {
     try {
-      await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
+      await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
       setExpenses(expenses.filter((expense) => expense._id !== expenseId)); // Remove deleted expense from the state
       setExpenseEntries(expenseEntries.filter((expense) => expense._id !== expenseId)); // Remove from local expense entries state
       alert('Expense deleted successfully!');
