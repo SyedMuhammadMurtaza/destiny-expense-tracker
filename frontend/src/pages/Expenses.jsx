@@ -143,6 +143,8 @@ const Expenses = () => {
         investment,
         clientId: selectedClientId,
         projectId: selectedProjectId,
+        client: selectedClient,
+        project: selectedProject
       });
       setDescription('');
       setInvestment('');
