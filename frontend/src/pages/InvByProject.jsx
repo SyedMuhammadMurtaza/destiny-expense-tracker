@@ -103,7 +103,7 @@ const InvByProject = () => {
 
   const handleDeleteExpense = async (expenseId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
+      await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
       setExpenses(expenses.filter((expense) => expense._id !== expenseId));
       alert('Expense deleted successfully!');
     } catch (error) {
