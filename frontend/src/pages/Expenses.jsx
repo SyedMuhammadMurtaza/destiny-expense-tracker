@@ -57,7 +57,7 @@ const Expenses = () => {
     }
   };
 
-  
+
   // Handle project search
   const handleProjectSearch = (searchValue) => {
     setSelectedProject(searchValue); // Update input value
@@ -364,6 +364,7 @@ const Expenses = () => {
     </div>
   );
 };
+
 
 export default Expenses;
 
