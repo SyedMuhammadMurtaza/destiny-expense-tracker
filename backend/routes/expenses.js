@@ -1,7 +1,8 @@
 // routes/expenses.js
 const express = require('express');
 const router = express.Router();
-const Expense = require('../models/Expense');
+const ExpenseModel = require('../models/Expense'); // Ensure this path is correct
+
 
 
 // Create a new expense
