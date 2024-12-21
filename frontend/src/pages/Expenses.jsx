@@ -57,6 +57,7 @@ const Expenses = () => {
     }
   };
 
+  
   // Handle project search
   const handleProjectSearch = (searchValue) => {
     setSelectedProject(searchValue); // Update input value
@@ -129,13 +130,8 @@ const Expenses = () => {
         investment,
         clientId: selectedClientId,
         projectId: selectedProjectId,
-<<<<<<< HEAD
         selectedClient: selectedClient,
         selectedProject: selectedProject
-=======
-        client: selectedClient,
-        project: selectedProject
->>>>>>> a5e5004141c6973ddb286b93843b2e31ba99e509
       });
       const savedExpense = response.data;
 
