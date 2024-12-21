@@ -346,8 +346,8 @@ const Expenses = () => {
             {expenseEntries.map((expense, index) => (
               <tr key={index} className="border-t">
                 <td className="p-2">{new Date(expense.date).toLocaleDateString('en-GB')}</td>
-                <td className="p-2">{expense.client}</td>
-                <td className="p-2">{expense.project}</td>
+                <td className="p-2">{expense.selectedClient}</td>
+                <td className="p-2">{expense.selectedProject}</td>
                 <td className="p-2">{expense.description}</td>
                 <td className="p-2">Rs. {expense.amount.toLocaleString()}</td>
                 <td className="p-2">{expense.investment}</td>
