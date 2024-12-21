@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Expense = require('../models/Expense');
 
+
 // Create a new expense
 router.post('/', async (req, res) => {
   try {
