@@ -18,13 +18,12 @@ const Expenses = () => {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
-  const [expenses, setExpenses] = useState([]);
   const [investment, setInvestment] = useState('');
   const [expenseEntries, setExpenseEntries] = useState([]);
 
   const investmentOptions = ['Muneeb', 'Asad']; // Valid investment options
 
-  // Fetch all clients
+  // Fetch all clients from backend
   const fetchClients = async () => {
     try {
       const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/clients');
@@ -42,20 +41,6 @@ const Expenses = () => {
       setProjects(response.data);
     } catch (error) {
       console.error('Error fetching projects:', error);
-    }
-  };
-
-  // Fetch expenses based on selected project
-  const fetchExpenses = async (projectId) => {
-    if (!projectId) {
-      setExpenses([]);
-      return;
-    }
-    try {
-      const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/expenses/${projectId}`);
-      setExpenses(response.data);
-    } catch (error) {
-      console.error('Error fetching expenses:', error);
     }
   };
 
@@ -121,7 +106,7 @@ const Expenses = () => {
       return;
     }
 
-    // Add expense entry to the list
+    // Create new expense entry
     const newExpense = {
       description,
       amount,
@@ -129,59 +114,57 @@ const Expenses = () => {
       investment,
       clientId: selectedClientId,
       projectId: selectedProjectId,
-      client: selectedClient,
-      project: selectedProject,
+      selectedClient: selectedClient,
+      selectedProject: selectedProject,
     };
 
-    setExpenseEntries([...expenseEntries, newExpense]);
+    
 
+    // Send the new expense to the backend
     try {
-      await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses', {
+      const response = await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses',{
         description,
         amount,
         date,
         investment,
         clientId: selectedClientId,
         projectId: selectedProjectId,
+        selectedClient: selectedClient,
+        selectedProject: selectedProject
       });
+      const savedExpense = response.data;
+
+      // Update local state with the new expense
+      setExpenseEntries([savedExpense, ...expenseEntries]);
+
+      // Clear the form fields
       setDescription('');
       setInvestment('');
       setAmount('');
       setDate('');
-      fetchExpenses(selectedProjectId); // Refresh expense list
-      alert('Expense logged successfully!');
     } catch (error) {
-      console.error('Error logging expense:', error);
-      alert('Failed to log expense.');
+      console.error('Error saving expense:', error);
+      alert('There was an error saving the expense.');
     }
   };
 
-  // Handle deleting an expense
+  // Handle deleting an expense from the database
   const handleDeleteExpense = async (expenseId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/expenses/${expenseId}`);
-      setExpenses(expenses.filter((expense) => expense._id !== expenseId)); // Remove deleted expense from the state
-      setExpenseEntries(expenseEntries.filter((expense) => expense._id !== expenseId)); // Remove from local expense entries state
-      alert('Expense deleted successfully!');
+      // Delete from backend
+      await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
+
+      // Remove from local state
+      setExpenseEntries(expenseEntries.filter(expense => expense._id !== expenseId));
     } catch (error) {
       console.error('Error deleting expense:', error);
-      alert('Failed to delete expense.');
+      alert('There was an error deleting the expense.');
     }
   };
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
+  
 
-  useEffect(() => {
-    if (selectedClientId) {
-      fetchProjects(selectedClientId);
-    } else {
-      setProjects([]);
-    }
-  }, [selectedClientId]);
-
-  // Handle downloading expenses as a PDF
+  // PDF download functionality
   const handleDownloadPDF = () => {
     if (expenseEntries.length === 0) {
       alert("No expenses available to generate PDF.");
@@ -210,6 +193,19 @@ const Expenses = () => {
 
     doc.save('expenses-report.pdf');
   };
+
+  // UseEffect hooks
+  useEffect(() => {
+    fetchClients(); // Fetch clients on component mount
+  }, []);
+
+  useEffect(() => {
+    if (selectedClientId) {
+      fetchProjects(selectedClientId); // Fetch projects based on selected client
+    } else {
+      setProjects([]);
+    }
+  }, [selectedClientId]);
 
   return (
     <div className="p-6 mt-12">
@@ -302,7 +298,6 @@ const Expenses = () => {
           />
         </div>
 
-        {/* Investment By - Searchable Dropdown */}
         <div className="relative w-44">
           <Input
             type="text"
@@ -313,16 +308,16 @@ const Expenses = () => {
           />
           {filteredInvestments.length > 0 && investment.trim() && (
             <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto w-full">
-              {filteredInvestments.map((investmentOption) => (
+              {filteredInvestments.map((option) => (
                 <li
-                  key={investmentOption}
+                  key={option}
                   className="p-2 cursor-pointer hover:bg-gray-200"
                   onClick={() => {
-                    setInvestment(investmentOption);
+                    setInvestment(option);
                     setFilteredInvestments([]);
                   }}
                 >
-                  {investmentOption}
+                  {option}
                 </li>
               ))}
             </ul>
@@ -332,38 +327,43 @@ const Expenses = () => {
         <Button type="submit">Log Expense</Button>
       </form>
 
-      {/* Display Expenses */}
-      <table className="w-full mt-6 border-collapse">
-        <thead>
-          <tr>
-            <th className="border p-2">Date</th>
-            <th className="border p-2">Client</th>
-            <th className="border p-2">Project</th>
-            <th className="border p-2">Description</th>
-            <th className="border p-2">Amount</th>
-            <th className="border p-2">Investment By</th>
-            <th className="border p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {expenseEntries.map((expense) => (
-            <tr key={expense._id}>
-              <td className="border p-2">{new Date(expense.date).toLocaleDateString('en-GB')}</td>
-              <td className="border p-2">{expense.client}</td>
-              <td className="border p-2">{expense.project}</td>
-              <td className="border p-2">{expense.description}</td>
-              <td className="border p-2">Rs. {expense.amount.toLocaleString()}</td>
-              <td className="border p-2">{expense.investment}</td>
-              <td className="border p-2">
-                <button  onClick={() => handleDeleteExpense(expense._id)} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
-              </td>
+      {/* Expenses Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto">
+          <thead>
+            <tr className="text-left bg-gray-100">
+              <th className="p-2">Date</th>
+              <th className="p-2">Client</th>
+              <th className="p-2">Project</th>
+              <th className="p-2">Description</th>
+              <th className="p-2">Amount</th>
+              <th className="p-2">Investment</th>
+              <th className="p-2">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <Button className='mt-12' onClick={handleDownloadPDF}>Download Expenses PDF</Button>
+          </thead>
+          <tbody>
+            {expenseEntries.map((expense, index) => (
+              <tr key={index} className="border-t">
+                <td className="p-2">{new Date(expense.date).toLocaleDateString('en-GB')}</td>
+                <td className="p-2">{expense.client}</td>
+                <td className="p-2">{expense.project}</td>
+                <td className="p-2">{expense.description}</td>
+                <td className="p-2">Rs. {expense.amount.toLocaleString()}</td>
+                <td className="p-2">{expense.investment}</td>
+                <td className="p-2">
+                  <Button onClick={() => handleDeleteExpense(expense._id)}>Delete</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <Button onClick={handleDownloadPDF} className="mt-6">Download Expenses PDF</Button>
     </div>
   );
 };
 
 export default Expenses;
+
+
