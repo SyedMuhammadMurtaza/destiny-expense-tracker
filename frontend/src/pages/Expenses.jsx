@@ -487,7 +487,7 @@ const Expenses = () => {
       clientId: selectedClientId,
       projectId: selectedProjectId,
       client: selectedClient,
-      selectedProject: selectedProject,
+      project: selectedProject,
     };
 
     
