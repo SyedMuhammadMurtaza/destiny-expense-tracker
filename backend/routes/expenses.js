@@ -8,10 +8,10 @@ const ExpenseModel = require('../models/Expense'); // Ensure this path is correc
 // Create a new expense
 router.post('/', async (req, res) => {
   try {
-    const { description, amount, date, investment, clientId, projectId, selectedClient, selectedProject } = req.body;
+    const { description, amount, date, investment, clientId, projectId, nameClient, nameProject } = req.body;
 
     // Validate required fields
-    if (!description || !amount || !date || !investment || !selectedClient || !selectedProject) {
+    if (!description || !amount || !date || !investment || !nameClient || !nameProject) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -23,8 +23,8 @@ router.post('/', async (req, res) => {
       investment,
       clientId,
       projectId,
-      selectedClient,
-      selectedProject,
+      nameClient,
+      nameProject,
     });
 
     // Save to database

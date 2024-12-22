@@ -27,8 +27,8 @@ const expenseSchema = new mongoose.Schema({
   investment: { type: String, required: true },
   clientId: { type: String, required: true },  // Client ID (reference)
   projectId: { type: String, required: true }, // Project ID (reference)
-  selectedClient: { type: String, required: true },    // Client name
-  selectedProject: { type: String, required: true },   // Project name
+  nameClient: { type: String, required: true },    // Client name
+  nameProject: { type: String, required: true },   // Project name
 });
 
 const ExpenseModel = mongoose.model('Expense', expenseSchema);
