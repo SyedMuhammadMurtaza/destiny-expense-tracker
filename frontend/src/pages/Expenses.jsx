@@ -124,7 +124,7 @@ const Expenses = () => {
     // Send the new expense to the backend
     try {
       const response = await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses',newExpense);
-      
+
       const savedExpense = response.data;
 
       // Update local state with the new expense
@@ -338,8 +338,8 @@ const Expenses = () => {
             {expenseEntries.map((expense, index) => (
               <tr key={index} className="border-t">
                 <td className="p-2">{new Date(expense.date).toLocaleDateString('en-GB')}</td>
-                <td className="p-2">{expense.selectedClient}</td>
-                <td className="p-2">{expense.selectedProject}</td>
+                <td className="p-2">{expense.nameClient}</td>
+                <td className="p-2">{expense.nameProject}</td>
                 <td className="p-2">{expense.description}</td>
                 <td className="p-2">Rs. {expense.amount.toLocaleString()}</td>
                 <td className="p-2">{expense.investment}</td>
