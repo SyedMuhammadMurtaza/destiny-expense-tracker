@@ -1,41 +1,20 @@
 // routes/expenses.js
 const express = require('express');
 const router = express.Router();
-const ExpenseModel = require('../models/Expense'); // Ensure this path is correct
-
-
+const Expense = require('../models/Expense');
 
 // Create a new expense
 router.post('/', async (req, res) => {
+  const { projectId, amount, description, date, investment } = req.body;
+  const expense = new Expense({ projectId, amount, description, date, investment });
+
   try {
-    const { description, amount, date, investment, clientId, projectId, nameClient, nameProject } = req.body;
-
-    // Validate required fields
-    if (!description || !amount || !date || !investment || !nameClient || !nameProject) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    // Create new expense entry
-    const newExpense = new ExpenseModel({
-      description,
-      amount,
-      date,
-      investment,
-      clientId,
-      projectId,
-      nameClient,
-      nameProject,
-    });
-
-    // Save to database
-    const savedExpense = await newExpense.save();
+    const savedExpense = await expense.save();
     res.status(201).json(savedExpense);
   } catch (error) {
-    console.error('Error saving expense:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(400).json({ error: error.message });
   }
 });
-
 
 // Get all expenses for a specific project
 router.get('/:projectId', async (req, res) => {
