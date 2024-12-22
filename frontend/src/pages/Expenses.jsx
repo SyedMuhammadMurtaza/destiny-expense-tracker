@@ -115,24 +115,16 @@ const Expenses = () => {
       investment,
       clientId: selectedClientId,
       projectId: selectedProjectId,
-      selectedClient: selectedClient,
-      selectedProject: selectedProject,
+      nameClient: selectedClient,
+      nameProject: selectedProject,
     };
 
     
 
     // Send the new expense to the backend
     try {
-      const response = await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses',{
-        description,
-        amount,
-        date,
-        investment,
-        clientId: selectedClientId,
-        projectId: selectedProjectId,
-        selectedClient: selectedClient,
-        selectedProject: selectedProject
-      });
+      const response = await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses',newExpense);
+      
       const savedExpense = response.data;
 
       // Update local state with the new expense
