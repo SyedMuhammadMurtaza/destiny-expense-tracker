@@ -14,6 +14,9 @@ const expenseSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Project'
   },
+  client: { type: String, required: true },
+  project: { type: String, required: true }
+
 });
 
 const Expense = mongoose.model('Expense', expenseSchema);

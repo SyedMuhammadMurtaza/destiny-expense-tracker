@@ -5,8 +5,8 @@ const Expense = require('../models/Expense');
 
 // Create a new expense
 router.post('/', async (req, res) => {
-  const { projectId, amount, description, date, investment } = req.body;
-  const expense = new Expense({ projectId, amount, description, date, investment });
+  const { projectId, amount, description, date, investment,client,project } = req.body;
+  const expense = new Expense({ projectId, amount, description, date, investment,client,project });
 
   try {
     const savedExpense = await expense.save();
