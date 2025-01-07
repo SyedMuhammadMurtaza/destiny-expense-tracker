@@ -84,6 +84,17 @@ router.get('/investment-summary/:investment', async (req, res) => {
   }
 });
 
+router.get('/', async (req, res) => {
+  try {
+    const expenses = await Expense.find({});
+    res.json(expenses);
+  } catch (error) {
+    console.error('Error fetching all expenses:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 
 
 
