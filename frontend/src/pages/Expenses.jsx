@@ -1,5 +1,3 @@
-// 
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Button from '../components/ui/Button';
@@ -21,8 +19,7 @@ const Expenses = () => {
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
   const [investment, setInvestment] = useState('');
-  const [expenseEntries, setExpenseEntries] = useState([]);
-  const [enteredExpenses, setEnteredExpenses] = useState([]);
+  const [enteredExpenses, setEnteredExpenses] = useState([]); 
 
   const investmentOptions = ['Muneeb', 'Asad']; // Valid investment options
 
@@ -121,15 +118,12 @@ const Expenses = () => {
       project: selectedProject,
     };
 
-    
-
     // Send the new expense to the backend
     try {
-      const response = await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses',newExpense);
+      const response = await axios.post('https://destiny-expense-tracker.onrender.com/api/expenses', newExpense); 
       const savedExpense = response.data;
 
-      // Update local state with the new expense
-      setExpenseEntries([savedExpense, ...expenseEntries]);
+      setEnteredExpenses([...enteredExpenses, savedExpense]); 
 
       // Clear the form fields
       setSelectedClient('');
@@ -144,52 +138,14 @@ const Expenses = () => {
     }
   };
 
-  const handleAddExpense = async (newExpense) => {
-    try {
-      const response = await fetch("https://destiny-expense-tracker.onrender.com/api/expenses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newExpense),
-      });
-  
-      if (response.ok) {
-        const createdExpense = await response.json();
-        setEnteredExpenses((prevExpenses) => [...prevExpenses, createdExpense]);
-        alert("Expense added successfully.");
-      } else {
-        const errorData = await response.json();
-        alert(`Failed to add expense: ${errorData.message}`);
-      }
-    } catch (error) {
-      console.error("Error adding expense:", error);
-      alert("An error occurred while trying to add the expense.");
-    }
-  };
-  
-
   // Handle deleting an expense from the database
-  // const handleDeleteExpense = async (expenseId) => {
-  //   try {
-  //     // Delete from backend
-  //     await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${expenseId}`);
-
-  //     // Remove from local state
-  //     setExpenseEntries(expenseEntries.filter(expense => expense._id !== expenseId));
-  //   } catch (error) {
-  //     console.error('Error deleting expense:', error);
-  //     alert('There was an error deleting the expense.');
-  //   }
-  // };
-
   const handleDeleteExpense = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this expense?");
     if (!confirmDelete) return;
-  
+
     try {
-      const response = await fetch(`https://destiny-expense-tracker.onrender.com/api/expenses/${id}`, {
-        method: "DELETE",
-      });
-  
+      const response = await axios.delete(`https://destiny-expense-tracker.onrender.com/api/expenses/${id}`);
+
       if (response.ok) {
         setEnteredExpenses((prevExpenses) =>
           prevExpenses.filter((expense) => expense._id !== id)
@@ -204,13 +160,23 @@ const Expenses = () => {
       alert("An error occurred while trying to delete the expense.");
     }
   };
-  
 
-  
+  // Handle editing an expense
+  const handleEditExpense = (expense) => {
+    // Populate form fields with expense data
+    setSelectedClient(expense.client);
+    setSelectedClientId(expense.clientId);
+    setSelectedProject(expense.project);
+    setSelectedProjectId(expense.projectId);
+    setDescription(expense.description);
+    setAmount(expense.amount);
+    setDate(expense.date);
+    setInvestment(expense.investment);
+  };
 
   // PDF download functionality
   const handleDownloadPDF = () => {
-    if (expenseEntries.length === 0) {
+    if (enteredExpenses.length === 0) {
       alert("No expenses available to generate PDF.");
       return;
     }
@@ -218,7 +184,7 @@ const Expenses = () => {
     const doc = new jsPDF();
     doc.text('Expenses Report', 14, 15);
 
-    const tableData = expenseEntries.map((expense) => [
+    const tableData = enteredExpenses.map((expense) => [
       new Date(expense.date).toLocaleDateString('en-GB'),
       expense.client,
       expense.project,
@@ -238,7 +204,20 @@ const Expenses = () => {
     doc.save('expenses-report.pdf');
   };
 
-  // UseEffect hooks
+  // Fetch entered expenses on component mount
+  useEffect(() => {
+    const fetchEnteredExpenses = async () => {
+      try {
+        const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/expenses/entered'); 
+        setEnteredExpenses(response.data);
+      } catch (error) {
+        console.error('Error fetching entered expenses:', error);
+      }
+    };
+
+    fetchEnteredExpenses();
+  }, []);
+
   useEffect(() => {
     fetchClients(); // Fetch clients on component mount
   }, []);
@@ -250,26 +229,6 @@ const Expenses = () => {
       setProjects([]);
     }
   }, [selectedClientId]);
-
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const response = await fetch("https://destiny-expense-tracker.onrender.com/api/expenses");
-        if (response.ok) {
-          const data = await response.json();
-          setEnteredExpenses(data); // Set fetched expenses to the state
-        } else {
-          console.error("Failed to fetch expenses");
-        }
-      } catch (error) {
-        console.error("Error fetching expenses:", error);
-      }
-    };
-  
-    fetchExpenses();
-  }, []);
-  
-  
 
   return (
     <div className="p-6 mt-12">
@@ -405,29 +364,14 @@ const Expenses = () => {
               <th className="p-2">Actions</th>
             </tr>
           </thead>
-          {/* <tbody>
-            {expenseEntries.map((expense, index) => (
-              <tr key={index} className="border-t">
-                <td className="p-2">{new Date(expense.date).toLocaleDateString('en-GB')}</td>
-                <td className="p-2">{expense.client}</td>
-                <td className="p-2">{expense.project}</td>
-                <td className="p-2">{expense.description}</td>
-                <td className="p-2">Rs. {expense.amount.toLocaleString()}</td>
-                <td className="p-2">{expense.investment}</td>
-                <td className="p-2">
-                  <Button onClick={() => handleDeleteExpense(expense._id)}>Delete</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody> */}
           <tbody>
-  {enteredExpenses.map((expense) => (
-    <tr key={expense._id}>
-      <td className="border border-gray-300 p-2">{expense.description}</td>
+            {enteredExpenses.map((expense) => (
+              <tr key={expense._id}>
+                <td className="border border-gray-300 p-2">{new Date(expense.date).toLocaleDateString()}</td>
+                <td className="border border-gray-300 p-2">{expense.client}</td>
+                <td className="border border-gray-300 p-2">{expense.project}</td>
+                <td className="border border-gray-300 p-2">{expense.description}</td>
       <td className="border border-gray-300 p-2">{expense.amount}</td>
-      <td className="border border-gray-300 p-2">{new Date(expense.date).toLocaleDateString()}</td>
-      <td className="border border-gray-300 p-2">{expense.client}</td>
-      <td className="border border-gray-300 p-2">{expense.project}</td>
       <td className="border border-gray-300 p-2">{expense.investment}</td>
       <td className="border border-gray-300 p-2">
         <button
