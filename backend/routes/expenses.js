@@ -41,6 +41,24 @@ router.delete('/expenses/:id', async (req, res) => {
   }
 });
 
+app.put('/expenses/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedExpense = await Expense.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+
+    if (!updatedExpense) {
+      return res.status(404).send({ message: 'Expense not found' });
+    }
+
+    res.send(updatedExpense);
+  } catch (error) {
+    res.status(500).send({ message: 'Error updating expense', error });
+  }
+});
+
+
 // Fetch total expenses by individual names for a particular project
 // Endpoint to fetch total expenses for "Muneeb" grouped by projectId
 router.get('/investment-summary/:investment', async (req, res) => {
