@@ -41,7 +41,7 @@ router.delete('/expenses/:id', async (req, res) => {
   }
 });
 
-router.put('api/expenses/:id', async (req, res) => {
+router.put('/expenses/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updatedExpense = await Expense.findByIdAndUpdate(id, req.body, {
