@@ -503,21 +503,6 @@ const Expenses = () => {
               <th className="p-2">Actions</th>
             </tr>
           </thead>
-          {/* <tbody>
-            {expenseEntries.map((expense, index) => (
-              <tr key={index} className="border-t">
-                <td className="p-2">{new Date(expense.date).toLocaleDateString('en-GB')}</td>
-                <td className="p-2">{expense.client}</td>
-                <td className="p-2">{expense.project}</td>
-                <td className="p-2">{expense.description}</td>
-                <td className="p-2">Rs. {expense.amount.toLocaleString()}</td>
-                <td className="p-2">{expense.investment}</td>
-                <td className="p-2">
-                  <Button onClick={() => handleDeleteExpense(expense._id)}>Delete</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody> */}
           <tbody>
   {paginatedExpenses.map((expense, index) => (
     <tr key={expense._id}  className={
@@ -526,11 +511,11 @@ const Expenses = () => {
         : ""
     }>
                       <td className="border border-gray-300 p-2">{startIndex + index + 1}</td> {/* Add serial number */}
-      <td className="border border-gray-300 p-2">{new Date(expense.date).toLocaleDateString()}</td>
+      <td className="border border-gray-300 p-2">{new Date(expense.date).toLocaleDateString('en-GB')}</td>
       <td className="border border-gray-300 p-2">{expense.client}</td>
       <td className="border border-gray-300 p-2">{expense.project}</td>
       <td className="border border-gray-300 p-2">{expense.description}</td>
-      <td className="border border-gray-300 p-2">{expense.amount}</td>
+      <td className="border border-gray-300 p-2">{expense.amount.toLocaleString()}</td>
       <td className="border border-gray-300 p-2">{expense.investment}</td>
       <td className="border border-gray-300 p-2">
         <button
