@@ -166,8 +166,6 @@ const InvByProject = () => {
     <div className="p-6 mt-12">
       <h1 className="text-2xl font-semibold mb-6">Investments by Project</h1>
 
-      <Button onClick={refreshData}>Refresh Data</Button> {/* Manual refresh button */}
-
       {/* Clients View */}
       {view === 'clients' && (
         <div className="flex flex-wrap gap-2">
@@ -214,11 +212,12 @@ const InvByProject = () => {
       {view === 'expenses' && (
         <div>
           <button
-            className="mb-4 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+            className="mb-4 mr-4 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
             onClick={handleBack}
           >
             Back to Projects
           </button>
+          <Button onClick={refreshData}>Refetch Data</Button> {/* Manual refresh button */}
 
           {/* Filter Dropdown */}
           <div className="mb-4">
