@@ -423,7 +423,7 @@ const Expenses = () => {
 
   {/* Description */}
   <div className="relative w-44">
-    <label htmlFor="description" className="block text-sm font-semibold mb-2">Expense Description</label>
+    <label htmlFor="description" className="block text-sm font-semibold mb-2">Description</label>
     <Input
       id="description"
       type="text"
