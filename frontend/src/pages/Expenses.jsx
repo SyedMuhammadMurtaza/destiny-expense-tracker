@@ -361,119 +361,140 @@ const Expenses = () => {
 
       {/* Log Expense Form */}
       <form onSubmit={editingExpense ? handleSaveEdit : handleLogExpense} className="w-[270%] flex justify-between gap-4 sm:w-auto mb-6 mt-12">
-        {/* Autocomplete for Clients */}
-        <div className="relative w-44">
-          <Input
-            type="text"
-            value={selectedClient}
-            onChange={(e) => handleClientSearch(e.target.value)}
-            placeholder="Enter Client"
-            required
-          />
-          {filteredClients.length > 0 && selectedClient.trim() && (
-            <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto w-full">
-              {filteredClients.map((client) => (
-                <li
-                  key={client._id}
-                  className="p-2 cursor-pointer hover:bg-gray-200"
-                  onClick={() => {
-                    setSelectedClient(client.name);
-                    setSelectedClientId(client._id);
-                    setFilteredClients([]);
-                  }}
-                >
-                  {client.name}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+  {/* Client Autocomplete */}
+  <div className="relative w-44">
+    <label htmlFor="client" className="block text-sm font-semibold mb-2">Client</label>
+    <Input
+      id="client"
+      type="text"
+      value={selectedClient}
+      onChange={(e) => handleClientSearch(e.target.value)}
+      placeholder="Enter Client"
+      required
+    />
+    {filteredClients.length > 0 && selectedClient.trim() && (
+      <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto w-full">
+        {filteredClients.map((client) => (
+          <li
+            key={client._id}
+            className="p-2 cursor-pointer hover:bg-gray-200"
+            onClick={() => {
+              setSelectedClient(client.name);
+              setSelectedClientId(client._id);
+              setFilteredClients([]);
+            }}
+          >
+            {client.name}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
 
-        {/* Autocomplete for Projects */}
-        <div className="relative w-44">
-          <Input
-            type="text"
-            value={selectedProject}
-            onChange={(e) => handleProjectSearch(e.target.value)}
-            placeholder="Enter Project"
-            required
-          />
-          {filteredProjects.length > 0 && selectedProject.trim() && (
-            <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto w-full">
-              {filteredProjects.map((project) => (
-                <li
-                  key={project._id}
-                  className="p-2 cursor-pointer hover:bg-gray-200"
-                  onClick={() => {
-                    setSelectedProject(project.name);
-                    setSelectedProjectId(project._id);
-                    setFilteredProjects([]);
-                  }}
-                >
-                  {project.name}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+  {/* Project Autocomplete */}
+  <div className="relative w-44">
+    <label htmlFor="project" className="block text-sm font-semibold mb-2">Project</label>
+    <Input
+      id="project"
+      type="text"
+      value={selectedProject}
+      onChange={(e) => handleProjectSearch(e.target.value)}
+      placeholder="Enter Project"
+      required
+    />
+    {filteredProjects.length > 0 && selectedProject.trim() && (
+      <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto w-full">
+        {filteredProjects.map((project) => (
+          <li
+            key={project._id}
+            className="p-2 cursor-pointer hover:bg-gray-200"
+            onClick={() => {
+              setSelectedProject(project.name);
+              setSelectedProjectId(project._id);
+              setFilteredProjects([]);
+            }}
+          >
+            {project.name}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
 
-        <div className="relative w-44">
-          <Input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Expense Description"
-            required
-          />
-        </div>
+  {/* Description */}
+  <div className="relative w-44">
+    <label htmlFor="description" className="block text-sm font-semibold mb-2">Expense Description</label>
+    <Input
+      id="description"
+      type="text"
+      value={description}
+      onChange={(e) => setDescription(e.target.value)}
+      placeholder="Expense Description"
+      required
+    />
+  </div>
 
-        <div className="relative w-44">
-          <Input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Amount"
-            required
-          />
-        </div>
+  {/* Amount */}
+  <div className="relative w-44">
+    <label htmlFor="amount" className="block text-sm font-semibold mb-2">Amount</label>
+    <Input
+      id="amount"
+      type="number"
+      value={amount}
+      onChange={(e) => setAmount(e.target.value)}
+      placeholder="Amount"
+      required
+    />
+  </div>
 
-        <div className="relative w-44">
-          <Input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </div>
+  {/* Date */}
+  <div className="relative w-44">
+    <label htmlFor="date" className="block text-sm font-semibold mb-2">Date</label>
+    <Input
+      id="date"
+      type="date"
+      value={date}
+      onChange={(e) => setDate(e.target.value)}
+      required
+    />
+  </div>
 
-        <div className="relative w-44">
-          <Input
-            type="text"
-            value={investment}
-            onChange={(e) => handleInvestmentSearch(e.target.value)}
-            placeholder="Investment By"
-            required
-          />
-          {filteredInvestments.length > 0 && investment.trim() && (
-            <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto w-full">
-              {filteredInvestments.map((option) => (
-                <li
-                  key={option}
-                  className="p-2 cursor-pointer hover:bg-gray-200"
-                  onClick={() => {
-                    setInvestment(option);
-                    setFilteredInvestments([]);
-                  }}
-                >
-                  {option}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+  {/* Investment */}
+  <div className="relative w-44">
+    <label htmlFor="investment" className="block text-sm font-semibold mb-2">Investment By</label>
+    <Input
+      id="investment"
+      type="text"
+      value={investment}
+      onChange={(e) => handleInvestmentSearch(e.target.value)}
+      placeholder="Investment By"
+      required
+    />
+    {filteredInvestments.length > 0 && investment.trim() && (
+      <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto w-full">
+        {filteredInvestments.map((option) => (
+          <li
+            key={option}
+            className="p-2 cursor-pointer hover:bg-gray-200"
+            onClick={() => {
+              setInvestment(option);
+              setFilteredInvestments([]);
+            }}
+          >
+            {option}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
 
-        <Button type="submit" >Log Expense  {editingExpense ? 'Save Changes' : 'Log Expense'}</Button>
-        {editingExpense && (
+  {/* Submit Button */}
+  <Button type="submit">
+    {editingExpense ? 'Save Changes' : 'Log Expense'}
+  </Button>
+
+  {/* Cancel Button (for editing) */}
+  {editingExpense && (
     <Button
       type="button"
       onClick={() => {
@@ -489,7 +510,8 @@ const Expenses = () => {
       Cancel
     </Button>
   )}
-      </form>
+</form>
+
 
       {/* Expenses Table */}
       <div className="overflow-x-auto w-[260%] md:w-full">
