@@ -23,7 +23,7 @@ const Expenses = () => {
   const [enteredExpenses, setEnteredExpenses] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1); // Page number state
-  const [itemsPerPage, setItemsPerPage] = useState(20); // Number of items per page
+  const [itemsPerPage, setItemsPerPage] = useState(10); // Number of items per page
   const [editingExpense, setEditingExpense] = useState(null);
 
 
@@ -216,11 +216,12 @@ const Expenses = () => {
     setAmount(expense.amount);
     setDate(new Date(expense.date).toISOString().split('T')[0]); // Set date in YYYY-MM-DD format
     setInvestment(expense.investment);
-    setSelectedClient(expense.client);
-    setSelectedClientId(expense.clientId);
-    setSelectedProject(expense.project);
-    setSelectedProjectId(expense.projectId);
+    setSelectedClient(expense.selectedClient);
+    setSelectedClientId(expense.selectedClientId);
+    setSelectedProject(expense.selectedProject);
+    setSelectedProjectId(expense.selectedProjectId);
   };
+  
 
   const handleSaveEdit = async (e) => {
     e.preventDefault();
@@ -235,8 +236,8 @@ const Expenses = () => {
       investment,
       client:selectedClient,
       project:selectedProject,
-      // clientId: selectedClientId,
-      // projectId: selectedProjectId,
+      clientId: selectedClientId,
+      projectId: selectedProjectId,
     };
   
     try {
@@ -265,10 +266,12 @@ const Expenses = () => {
       } else {
         alert('Failed to update expense.');
       }
+      
     } catch (error) {
       console.error('Error updating expense:', error);
       alert('An error occurred while updating the expense.');
     }
+    
   };
 
   // PDF download functionality

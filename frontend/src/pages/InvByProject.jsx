@@ -13,14 +13,14 @@ const InvByProject = () => {
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [view, setView] = useState('clients'); // 'clients', 'projects', or 'expenses'
-
+  
   const calculateTotal = (expensesList) =>
     expensesList.reduce((total, expense) => total + expense.amount, 0);
 
   const [totalExpenses, setTotalExpenses] = useState(0); // For all expenses
   const [filteredTotal, setFilteredTotal] = useState(0); // For filtered expenses
 
-  // Fetch all clients
+  // Function to fetch all clients
   const fetchClients = async () => {
     try {
       const response = await axios.get('https://destiny-expense-tracker.onrender.com/api/clients');
@@ -30,7 +30,7 @@ const InvByProject = () => {
     }
   };
 
-  // Fetch projects for a specific client
+  // Function to fetch projects for a specific client
   const fetchProjects = async (clientId) => {
     try {
       const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/projects/${clientId}`);
@@ -40,7 +40,7 @@ const InvByProject = () => {
     }
   };
 
-  // Fetch expenses for a specific project
+  // Function to fetch expenses for a specific project
   const fetchExpenses = async (projectId) => {
     try {
       const response = await axios.get(`https://destiny-expense-tracker.onrender.com/api/expenses/${projectId}`);
@@ -52,6 +52,21 @@ const InvByProject = () => {
       console.error('Error fetching expenses:', error);
     }
   };
+
+  // Refetch data (Clients, Projects, and Expenses)
+  const refreshData = () => {
+    if (selectedClient) {
+      fetchProjects(selectedClient);
+    }
+    if (selectedProject) {
+      fetchExpenses(selectedProject);
+    }
+  };
+
+  // Fetch clients on component mount
+  useEffect(() => {
+    fetchClients();
+  }, []);
 
   // Handle client tab click
   const handleClientClick = (clientId) => {
@@ -146,14 +161,14 @@ const InvByProject = () => {
 
     doc.save(`${projectName}-expenses-report.pdf`);
   };
-  useEffect(() => {
-    fetchClients();
-  }, []);
 
   return (
     <div className="p-6 mt-12">
       <h1 className="text-2xl font-semibold mb-6">Investments by Project</h1>
 
+      <Button onClick={refreshData}>Refresh Data</Button> {/* Manual refresh button */}
+
+      {/* Clients View */}
       {view === 'clients' && (
         <div className="flex flex-wrap gap-2">
           {clients.map((client) => (
@@ -168,6 +183,7 @@ const InvByProject = () => {
         </div>
       )}
 
+      {/* Projects View */}
       {view === 'projects' && (
         <div>
           <button
@@ -194,6 +210,7 @@ const InvByProject = () => {
         </div>
       )}
 
+      {/* Expenses View */}
       {view === 'expenses' && (
         <div>
           <button
@@ -229,7 +246,8 @@ const InvByProject = () => {
               Total for Filtered Expenses: {investmentFilter ? `Rs. ${filteredTotal}` : 'N/A'}
             </p>
           </div>
- 
+
+          {/* Expenses Table */}
           {filteredExpenses.length > 0 ? (
             <table className="w-full border-collapse border border-gray-700">
               <thead>
@@ -253,35 +271,26 @@ const InvByProject = () => {
                     </td>
                     <td className="border border-gray-700 px-4 py-2">{expense.investment}</td>
                     <td className="border border-gray-700 px-4 py-2">
-                    <button
-                      className="bg-red-500 text-white px-4 py-2 rounded"
-                      onClick={() => handleDeleteExpense(expense._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+                      <button
+                        className="bg-red-500 text-white px-4 py-2 rounded"
+                        onClick={() => handleDeleteExpense(expense._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
-              {/* <tfoot>
-                <tr>
-                  <td colSpan={5} className="text-right py-2 px-4">
-                    <Button label="Download PDF" onClick={handleDownloadPDF} />
-                  </td>
-                </tr>
-              </tfoot> */}
             </table>
           ) : (
             <p className="text-red-600">No expenses found for the selected project.</p>
           )}
-          
         </div>
       )}
-       <div className='mt-10'>
-      <Button variant="secondary" onClick={handleDownloadPDF}>
-  Download as PDF
-</Button>
-</div>
+
+      <div className="mt-10">
+        <Button variant="secondary" onClick={handleDownloadPDF}>Download as PDF</Button>
+      </div>
     </div>
   );
 };
